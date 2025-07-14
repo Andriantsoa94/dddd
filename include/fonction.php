@@ -125,4 +125,104 @@ function get_connection() {
     
     return $conn;
 }
+function retourner_emprunt($id_emprunt) {
+    $conn = dbconnect();
+    $query = "UPDATE emprunt SET date_retour = NOW() WHERE id_emprunt = ?";
+    $stmt = mysqli_prepare($conn, $query);
+    $result = $stmt;
+    mysqli_close($conn);
+    return $result;
+}
+
+function get_emprunts_membre($id_membre) {
+    $conn = dbconnect();
+    $query = "SELECT e.id_emprunt, e.date_emprunt, e.date_retour, o.nom_objet, o.id_objet,
+                     m.nom as proprietaire_nom
+              FROM emprunt e 
+              JOIN objet o ON e.id_objet = o.id_objet 
+              JOIN membre m ON o.id_membre = m.id_membre
+              WHERE e.id_membre = ? 
+              ORDER BY e.date_emprunt DESC";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id_membre);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $emprunts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_close($conn);
+    return $emprunts;
+}
+
+function separer_emprunts($emprunts) {
+    $emprunts_actifs = array_filter($emprunts, function($emprunt) {
+        return $emprunt['date_retour'] === null;
+    });
+    $emprunts_historique = array_filter($emprunts, function($emprunt) {
+        return $emprunt['date_retour'] !== null;
+    });
+    
+    return [
+        'actifs' => $emprunts_actifs,
+        'historique' => $emprunts_historique
+    ];
+}
+
+function enregistrer_etat_retour($id_emprunt, $etat_objet) {
+    error_log("Objet retourne - Emprunt ID: $id_emprunt, Etat: $etat_objet");
+}
+
+function get_tous_les_emprunts() {
+    $conn = dbconnect();
+    $query = "SELECT e.id_emprunt, e.date_emprunt, e.date_retour, 
+                     o.nom_objet, o.id_objet,
+                     proprietaire.nom as proprietaire_nom,
+                     emprunteur.nom as emprunteur_nom,
+                     emprunteur.id_membre as emprunteur_id,
+                     c.nom_categorie,
+                     CASE 
+                         WHEN e.date_retour IS NULL THEN 'En cours'
+                         ELSE 'Retourné'
+                     END as statut
+              FROM emprunt e 
+              JOIN objet o ON e.id_objet = o.id_objet 
+              JOIN membre proprietaire ON o.id_membre = proprietaire.id_membre
+              JOIN membre emprunteur ON e.id_membre = emprunteur.id_membre
+              JOIN categorie_objet c ON o.id_categorie = c.id_categorie
+              ORDER BY e.date_emprunt DESC";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $emprunts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_close($conn);
+    return $emprunts;
+}
+
+
+function get_statistiques_emprunts() {
+    $conn = dbconnect();
+    
+    
+    $query_total = "SELECT COUNT(*) as total FROM emprunt";
+    $result_total = mysqli_query($conn, $query_total);
+    $total = mysqli_fetch_assoc($result_total)['total'];
+    
+    
+    $query_en_cours = "SELECT COUNT(*) as en_cours FROM emprunt WHERE date_retour IS NULL";
+    $result_en_cours = mysqli_query($conn, $query_en_cours);
+    $en_cours = mysqli_fetch_assoc($result_en_cours)['en_cours'];
+    
+
+    $query_retournes = "SELECT COUNT(*) as retournes FROM emprunt WHERE date_retour IS NOT NULL";
+    $result_retournes = mysqli_query($conn, $query_retournes);
+    $retournes = mysqli_fetch_assoc($result_retournes)['retournes'];
+    
+    mysqli_close($conn);
+    
+    return [
+        'total' => $total,
+        'en_cours' => $en_cours,
+        'retournes' => $retournes
+    ];
+}
+
+
 ?>

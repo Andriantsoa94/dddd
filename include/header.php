@@ -18,6 +18,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="deconnexion.php">Deconnexion</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="total_objet_retourner.php">Total emprunt</a>
+                </li>
             </ul>
         </div>
     </div>

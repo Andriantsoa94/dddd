@@ -22,16 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $date_retour = date('Y-m-d', strtotime("+$duree days"));
 
-    $query = "INSERT INTO emprunt (id_objet, id_emprunt, date_emprunt, date_retour, statut_emprunt) 
-          VALUES (?, ?, NOW(), ?, 'En cours')";
+    $query = "INSERT INTO emprunt (id_objet, id_membre, date_emprunt, date_retour) 
+          VALUES (?, ?, NOW(), ?)";
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, "iis", $objet_id, $emprunteur_id, $date_retour);
     mysqli_stmt_execute($stmt);
 
-    $query = "UPDATE objet SET statut = 'Emprunte' WHERE id = ?";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "i", $objet_id);
-    mysqli_stmt_execute($stmt);
 
     mysqli_close($conn);
 }
