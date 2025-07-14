@@ -1,0 +1,30 @@
+-bdd.sql [ok]
+  .creation database emprunt(Harena)
+  .table livre(Harena)
+  .creation table categorie_objet(Harena)
+  .creation table image_objet (Harena)
+  .insertion donnee emprunt(Harena)
+-index.php[ok]
+  .include bootstrap(Harena)
+  .input(Harena)
+     password
+     nom 
+     mail
+     date de naissance 
+     genre
+  .inserer donnees sur BDD membre (Tso)
+  .boutton have an account (Tso)
+
+-traitlog.php[ok]
+   .login si compte existant(Tso)
+   .inscription si contraire (Tso)
+
+-fonction.php[ok]
+   .ajouter_membre(Tso)
+
+-accueil.php[ok]
+   .trier par categorie(Tso)
+   .lites objets(Tso)
+   .date retour(Tso)
+
+-bootstrap[ok] (Hareana & Tsoa)
