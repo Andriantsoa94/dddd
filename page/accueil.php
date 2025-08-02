@@ -56,7 +56,7 @@ $categories = get_categories();
                     <?php } ?>
                 </select>
                 <label for="nom_objet" class="ms-2 me-2">Nom de l'objet:</label>
-                <input type="text" name="nom_objet" class="form-control me-2" style="width: 180px;" value="<?php echo htmlspecialchars($nom_filter); ?>">
+                <input type="text" name="nom_objet" class="form-control me-2" style="width: 180px;" value="<?= $nom_filter ?>">
                 <div class="form-check ms-2">
                     <input class="form-check-input" type="checkbox" name="disponible" id="disponible" <?php echo $disponible_filter ? 'checked' : ''; ?> />
                     <label class="form-check-label" for="disponible">Disponible</label>
